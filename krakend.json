@@ -1,0 +1,35 @@
+{
+	"$schema": "https://www.krakend.io/schema/v2.9/krakend.json",
+	"version": 3,
+	"plugin": {
+		"pattern": ".so",
+		"folder": "./amplitude_forwarder/"
+	},
+	"endpoints": [
+		{
+			"endpoint": "/api/v3/featureflag",
+			"method": "GET",
+			"output_encoding": "json-collection",
+			"input_query_strings": ["featureFlags"],
+			"input_headers": ["*"],
+			"backend": [
+				{
+					"url_pattern": "/v1/vardata",
+					"host": ["https://api.lab.amplitude.com"],
+					"encoding": "fast-json",
+					"extra_config": {
+						"plugin/req-resp-modifier": {
+							"name": ["amplitude-forwarder-response"]
+						}
+					}
+				}
+			],
+			"extra_config": {
+				"plugin/req-resp-modifier": {
+					"name": ["amplitude-forwarder-request"]
+				}
+			}
+		}
+	],
+	"extra_config": {}
+}
